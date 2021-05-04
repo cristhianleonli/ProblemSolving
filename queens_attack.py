@@ -21,84 +21,98 @@ import sys
 def translate_position(position, size):
     return [size - position[0], position[1] - 1]
 
-def locate_opponents(opponents, r_q, c_q):
-    memo = {
-        "t": [], "b": [], "r": [], "l": [],
-        "tr": [], "br": [], "bl": [], "tl": []
-    }
+def find_diagonal(queen, obstacles, size, pos):
+    positions = []
 
-    for opponent in opponents:
-        if opponent[1] == c_q and opponent[0] > r_q:
-            memo["t"].append(opponent)
+    if pos == 'tr':
+        i, j = queen[0] - 1, queen[1] + 1
+        while i >= 0 and j < size:
+            p = [i, j]
+            if p in obstacles:
+                break
+            positions.append(p)
+            i, j = i - 1, j + 1
+    elif pos == 'tl':
+        i, j = queen[0] - 1, queen[1] - 1
+        while i >= 0 and j >= 0:
+            p = [i, j]
+            if p in obstacles:
+                break
+            positions.append(p)
+            i, j = i - 1, j - 1
+    elif pos == 'br':
+        i, j = queen[0] + 1, queen[1] + 1
+        while i < size and j < size:
+            p = [i, j]
+            if p in obstacles:
+                break
+            positions.append(p)
+            i, j = i + 1, j + 1
+    elif pos == 'bl':
+        i, j = queen[0] + 1, queen[1] - 1
+        while i < size and j >= 0:
+            p = [i, j]
+            if p in obstacles:
+                break
+            positions.append(p)
+            i, j = i + 1, j - 1
+    
+    return len(positions)
 
-        if opponent[1] == c_q and opponent[0] < r_q:
-            memo["b"].append(opponent)
-
-        if opponent[0] == r_q and opponent[1] > c_q:
-            memo["r"].append(opponent)
-
-        if opponent[0] == r_q and opponent[1] < c_q:
-            memo["l"].append(opponent)
-
-        diff_r = opponent[0] - r_q
-        diff_c = opponent[1] - c_q
-
-        if abs(diff_r) == abs(diff_c):
-            if diff_r >= 0 and diff_c >= 0:
-                memo["tr"].append(opponent)
-
-            if diff_r >= 0 and diff_c < 0:
-                memo["tl"].append(opponent)
-
-            if diff_r < 0 and diff_c >= 0:
-                memo["br"].append(opponent)
-
-            if diff_r < 0 and diff_c < 0:
-                memo["bl"].append(opponent)
-
-    return memo
-
-def find_horizontal(queen, border, obstacles):
+def find_hv(queen, obstacles, size, pos):
     positions = []
 
     if pos == 't':
-        pass
-    elif pos == 'tr':
-        pass
-    elif pos == 'tr':
-        pass
-    elif pos == 'tr':
-        pass
-    elif pos == 'tr':
-        pass
-    elif pos == 'tr':
-        pass
-    elif pos == 'tr':
-        pass
-    elif pos == 'tr':
-        pass
+        i = queen[0] - 1
+        while i >= 0:
+            p = [i, queen[1]]
+            if p in obstacles:
+                break
+            positions.append(p)
+            i -= 1
+    elif pos == 'b':
+        for i in range(queen[0] + 1, size):
+            p = [i, queen[1]]
 
-    for i in range(queen[0] + 1, border[0]):
-        p = [i, queen[1]]
-        if p in obstacles:
-            break
-        positions.append(p)
+            if p in obstacles:
+                break
+            positions.append(p)
+    elif pos == 'r':
+        for i in range(queen[1] + 1, size):
+            p = [queen[0], i]
+
+            if p in obstacles:
+                break
+            positions.append(p)
+    elif pos == 'l':
+        i = queen[1] - 1
+        while i >= 0:
+            p = [queen[0], i]
+            if p in obstacles:
+                break
+            positions.append(p)
+            i -= 1
     
-    return positions
+    return len(positions)
 
 def queens_attack(n, k, r_q, c_q, obstacles):
+    queen_position = translate_position([r_q, c_q], size=n)
     obstacles_positions = []
 
     for obstacle in obstacles:
         obstacles_positions.append(translate_position(obstacle, size=n))
-    
-    queen_position = translate_position([r_q, c_q], size=n)
 
-    # print(obstacles_positions)
-    # print(queen_position)
+    right = find_hv(queen_position, obstacles_positions, size=n, pos='r')
+    left = find_hv(queen_position, obstacles_positions, size=n, pos='l')
+    bottom = find_hv(queen_position, obstacles_positions, size=n, pos='b')
+    top = find_hv(queen_position, obstacles_positions, size=n, pos='t')
 
-    right = find_horizontal(queen_position, [n-1, queen_position[1]], obstacles)
-    print(right)
+    top_right = find_diagonal(queen_position, obstacles_positions, size=n, pos='tr')
+    top_left = find_diagonal(queen_position, obstacles_positions, size=n, pos='tl')
+    bottom_right = find_diagonal(queen_position, obstacles_positions, size=n, pos='br')
+    bottom_left = find_diagonal(queen_position, obstacles_positions, size=n, pos='bl')
+
+    return right + left + bottom + top + top_right + top_left + bottom_right + bottom_left
 
 if __name__ == '__main__':
     # fptr = open(os.environ['OUTPUT_PATH'], 'w')
@@ -117,7 +131,7 @@ if __name__ == '__main__':
 
     obstacles = [
         [5, 5],
-        [4, 3],
+        [4, 2],
         [2, 3]
     ]
 
