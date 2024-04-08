@@ -5,3 +5,4 @@ This repository contains problem solving algorithms from HackerRank, and other a
 ## Platforms
 - [HackerRank](https://www.hackerrank.com/)
 - [Leetcode](https://www.leetcode.com/)
+- [Codewars](https://www.codewars.com/)
