@@ -40,3 +40,5 @@ func key(w string) string {
 	sort.Strings(s)
 	return strings.Join(s, "")
 }
+
+func key2() {}
